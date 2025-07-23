@@ -12,9 +12,13 @@ import { useNavigation } from "@react-navigation/native";
 import ShopIcon from "../components/icons/ShopIcon";
 import DownIcon from "../components/icons/DownIcon";
 import LogoKsa from "../assets/svg/LogoKsa";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 export default function NavBar() {
   const navigation = useNavigation();
+  const { items } = useSelector((state: RootState) => state.cartSlice);
+  
   const [text, setText] = useState("");
 
   return (
@@ -36,14 +40,28 @@ export default function NavBar() {
             <Text style={styles.loginText}>¡HOLA!</Text>
             <Text style={styles.loginText}>Inicia sesión</Text>
           </Pressable>
-          <DownIcon />
+          <Pressable
+            onPress={() =>
+              navigation.navigate("AuthStack", { screen: "SignInScreen" })
+            }
+          >
+            <DownIcon />
+          </Pressable>
         </View>
         <Pressable
           onPress={() =>
             navigation.navigate("ServicesStack", { screen: "CartScreen" })
           }
         >
-          <ShopIcon />
+          <View style={styles.cartIconContainer}>
+            <ShopIcon />
+            {/* Mostrar el círculo con la cantidad si hay productos en el carrito */}
+            {items.length > 0 && (
+              <View style={styles.cartQuantityCircle}>
+                <Text style={styles.cartQuantityText}>{items.length}</Text>
+              </View>
+            )}
+          </View>
         </Pressable>
       </View>
 
@@ -93,5 +111,24 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
     color: "#000",
+  },
+  cartIconContainer: {
+    position: "relative",
+  },
+  cartQuantityCircle: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    width: 20,
+    height: 20,
+    borderRadius: 10, // Círculo
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cartQuantityText: {
+    fontSize: 12,
+    color: "white",
+    fontWeight: "bold",
   },
 });

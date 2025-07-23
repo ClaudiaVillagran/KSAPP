@@ -1,10 +1,28 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import LogoKsa from "../../assets/svg/LogoKsa";
 import ItemCart from "./ItemCart"; // puedes mapear múltiples
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import EmptyCart from "./EmptyCart";
+import {
+  addItemToCart,
+  removeItemFromCart,
+  removeProductFromCart,
+} from "../../store/reducers/cartSlice";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CartScreen() {
-  const subtotal = 20000;
+  const navigation = useNavigation();
+  const { items } = useSelector((state: RootState) => state.cartSlice);
+
+  const dispatch = useDispatch();
+
+  // Calcular el subtotal
+  const subtotal = items.reduce(
+    (total, item) => total + item.price * item.qty,
+    0
+  );
 
   return (
     <View style={styles.container}>
@@ -13,18 +31,53 @@ export default function CartScreen() {
       </View>
 
       <View style={styles.body}>
-          <ItemCart />
+        {/* Si el carrito está vacío, muestra el componente EmptyCart */}
+        {items.length === 0 ? (
+          <EmptyCart />
+        ) : (
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <ItemCart
+                id={item.id}
+                image={item.image}
+                title={item.title}
+                price={item.sum}
+                qty={item.qty}
+                // Lógica para aumentar cantidad
+                onAdd={() => dispatch(addItemToCart(item))}
+                // Lógica para disminuir cantidad
+                onRemove={() => dispatch(removeItemFromCart(item))}
+                // Lógica para eliminar producto
+                onDelete={() => dispatch(removeProductFromCart(item))}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
 
-        <View style={styles.footer}>
-          <View style={styles.subtotalRow}>
-            <Text style={styles.subtotalLabel}>Subtotal:</Text>
-            <Text style={styles.subtotalValue}>${subtotal.toLocaleString()}</Text>
+        {/* Solo muestra el footer si hay productos en el carrito */}
+        {items.length > 0 && (
+          <View style={styles.footer}>
+            {/* Detalles del subtotal */}
+            <View style={styles.subtotalRow}>
+              <Text style={styles.subtotalLabel}>Subtotal:</Text>
+              <Text style={styles.subtotalValue}>
+                ${subtotal.toLocaleString()}
+              </Text>
+            </View>
+
+            <Pressable
+              style={styles.checkoutButton}
+              onPress={() =>
+                navigation.navigate("CheckOutStack")
+              }
+            >
+              <Text style={styles.checkoutButtonText}>Finalizar compra</Text>
+            </Pressable>
           </View>
-
-          <Pressable style={styles.checkoutButton}>
-            <Text style={styles.checkoutButtonText}>Finalizar compra</Text>
-          </Pressable>
-        </View>
+        )}
       </View>
     </View>
   );
@@ -76,7 +129,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom:20
+    marginBottom: 20,
   },
   checkoutButtonText: {
     color: "#fff",

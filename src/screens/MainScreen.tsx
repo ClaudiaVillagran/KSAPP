@@ -1,10 +1,11 @@
-import {  StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 
 import AuthStack from "../navigation/AuthStack";
 import PrincipalTabs from "../navigation/PrincipalTabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import ServicesStack from "../navigation/ServicesStack";
+import CheckOutScreen from "./cart/checkOut/CheckOutScreen";
 
 const Stack = createStackNavigator();
 export default function MainScreen() {
@@ -13,7 +14,16 @@ export default function MainScreen() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="PrincipalTabs" component={PrincipalTabs} />
         <Stack.Screen name="AuthStack" component={AuthStack} />
-        <Stack.Screen name="ServicesStack" component={ServicesStack} />
+        <Stack.Screen
+          options={{  title: "Atras" }}
+          name="ServicesStack"
+          component={ServicesStack}
+        />
+        <Stack.Screen
+          options={{ headerShown: true, title: "Confirmar Pedido" }}
+          name="CheckOutStack"
+          component={CheckOutScreen}
+        />
       </Stack.Navigator>
     </View>
   );

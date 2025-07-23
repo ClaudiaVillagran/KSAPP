@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   picker: {
-    height: 50,
     width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",

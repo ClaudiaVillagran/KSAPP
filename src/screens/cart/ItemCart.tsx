@@ -2,36 +2,47 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AntDesign from "@expo/vector-icons/AntDesign";
-export default function ItemCart() {
+
+export default function ItemCart({
+  id,
+  image,
+  title,
+  price,
+  qty,
+  onAdd,
+  onRemove,
+  onDelete,
+}) {
   return (
     <View style={styles.card}>
-      <Image
-        source={require("../../assets/img/mantencion.webp")}
-        style={styles.image}
-      />
+      <Image source={image} style={styles.image} />
 
       <View style={styles.details}>
-        <Text style={styles.title}>EcoHierbaschile - Asesoría Compost</Text>
-        <Text style={styles.price}>$20.000</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.price}>${price.toLocaleString()}</Text>
         <View style={styles.actionsRow}>
           <View style={styles.quantityContainer}>
-            <Pressable style={styles.iconButton}>
+            {/* Aumentar cantidad */}
+            <Pressable style={styles.iconButton} onPress={onRemove}>
               <FontAwesome5 name="minus" size={10} color="#348ba8" />
             </Pressable>
 
-            <Text style={styles.quantityText}>1</Text>
+            <Text style={styles.quantityText}>{qty}</Text>
 
-            <Pressable style={styles.iconButton}>
+            {/* Disminuir cantidad */}
+            <Pressable style={styles.iconButton} onPress={onAdd}>
               <FontAwesome5 name="plus" size={10} color="#348ba8" />
             </Pressable>
           </View>
 
-          <Pressable style={styles.deleteButton}>
+          {/* Eliminar producto */}
+          <Pressable style={styles.deleteButton} onPress={onDelete}>
             <AntDesign name="delete" size={16} color="#d9534f" />
             <Text style={styles.deleteText}>Eliminar</Text>
           </Pressable>
         </View>
       </View>
+      
     </View>
   );
 }
@@ -83,28 +94,24 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     gap: 10,
   },
-
   iconButton: {
     borderWidth: 1,
     borderColor: "#348ba8",
     borderRadius: 9,
     padding: 4,
   },
-
   quantityText: {
     fontSize: 16,
     fontWeight: "500",
     minWidth: 20,
     textAlign: "center",
   },
-
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 20, // espacio entre contador y eliminar
   },
-
   deleteButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -113,7 +120,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: "#f9f9f9",
   },
-
   deleteText: {
     marginLeft: 6,
     fontSize: 14,
