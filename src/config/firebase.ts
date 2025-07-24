@@ -1,24 +1,26 @@
-import { initializeApp } from 'firebase/app';
-import dotenv from 'dotenv';
-dotenv.config(); // Cargar las variables del archivo .env
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 // Optionally import the services that you want to use
-// import {...} from 'firebase/auth';
 // import {...} from 'firebase/database';
 // import {...} from 'firebase/firestore';
 // import {...} from 'firebase/functions';
 // import {...} from 'firebase/storage';
 
 // Initialize Firebase
+
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
+  apiKey: "AIzaSyC4w3d1_QnqY-TBxYxQkN__XT_Bqzw8_nc",
+  authDomain: "ksapp-ad81e.firebaseapp.com",
+  projectId: "ksapp-ad81e",
+  storageBucket: "ksapp-ad81e.firebasestorage.app",
+  messagingSenderId: "649382354226",
+  appId: "1:649382354226:web:2f21a4d089463069eccb2b"
 };
 
 const app = initializeApp(firebaseConfig);
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
+const auth = getAuth(app)
+
+export {auth}

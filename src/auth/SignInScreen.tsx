@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   View,
+  Alert, // Importar Alert para mostrar los mensajes
 } from "react-native";
 import React, { useState } from "react";
 import LogoKsa from "../assets/svg/LogoKsa";
@@ -14,21 +15,18 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import ControllerTextInput from "../components/inputs/ControllerTextInput";
 import { Ionicons } from "@expo/vector-icons"; // Importar los íconos
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 const schema = yup
   .object({
-    Email: yup
+    email: yup
       .string()
       .required("El correo electrónico es obligatorio")
       .email("Correo invalido"),
-    Password: yup
+    password: yup
       .string()
       .required("La contraseña es obligatoria")
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
-    ConfirmPassword: yup
-      .string()
-      .required("Debes confirmar la contraseña")
-      .oneOf([yup.ref("Password"), null], "Las contraseñas no coinciden"), // Validación para que coincidan
   })
   .required();
 
@@ -38,11 +36,30 @@ export default function SignInScreen() {
     resolver: yupResolver(schema),
   });
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para la confirmación
 
-  const saveLog = (formData) => {
-    console.log(formData);
-    navigation.navigate("PrincipalTabs");
+  const saveLog = async (data) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      navigation.navigate("PrincipalTabs");
+      console.log("usercredentials", userCredential);
+    } catch (error) {
+      let errorMessage = "";
+      console.log(error.code);
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "Usuario no encontrado";
+      } else if (error.code === "auth/invalid-credential") {
+        errorMessage = "Correo o contraseña incorrecta";
+      } else {
+        errorMessage = "Ocurrió un error al iniciar sesión";
+      }
+      
+      // Usar Alert.alert para mostrar el mensaje de error
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   return (
@@ -56,7 +73,7 @@ export default function SignInScreen() {
       </Text>
       <ControllerTextInput
         control={control}
-        name="Email"
+        name="email"
         placeholder="Correo electrónico *"
         keyboardType="email-address"
         rules={{
@@ -66,7 +83,7 @@ export default function SignInScreen() {
       <View style={styles.passwordContainer}>
         <ControllerTextInput
           control={control}
-          name="Password"
+          name="password"
           placeholder="Contraseña *"
           secureTextEntry={!showPassword}
           rules={{
@@ -79,27 +96,6 @@ export default function SignInScreen() {
         >
           <Ionicons
             name={showPassword ? "eye-off" : "eye"} // Cambiar ícono
-            size={24}
-            color="#2563EB"
-          />
-        </Pressable>
-      </View>
-      <View style={styles.passwordContainer}>
-        <ControllerTextInput
-          control={control}
-          name="ConfirmPassword"
-          placeholder="Confirmar Contraseña *"
-          secureTextEntry={!showConfirmPassword} // Alternar visibilidad
-          rules={{
-            required: "Este campo es obligatorio",
-          }}
-        />
-        <Pressable
-          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          style={styles.eyeIconContainer}
-        >
-          <Ionicons
-            name={showConfirmPassword ? "eye-off" : "eye"} // Cambiar ícono
             size={24}
             color="#2563EB"
           />
