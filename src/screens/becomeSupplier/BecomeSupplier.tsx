@@ -98,7 +98,7 @@ export default function BecomeSupplier() {
 
         {/* Componente del formulario de la empresa */}
         <SupplierForm
-          onSubmit={(formData) => console.log("Formulario enviado:", formData)}
+          // onSubmit={(formData) => console.log("Formulario enviado:", formData)}
         />
       </View>
     </ScrollView>

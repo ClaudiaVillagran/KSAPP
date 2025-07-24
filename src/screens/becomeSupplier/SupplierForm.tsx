@@ -7,132 +7,183 @@ import {
   Button,
   View,
 } from "react-native";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-const SupplierForm = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    rut: "",
-    companyName: "",
-    businessType: "",
-    address: "",
-    number: "",
-    department: "",
-    city: "",
-    region: "",
-    commune: "",
-    phone: "",
-    email: "",
-    yearsInBusiness: "",
-    document: null,
+import ControllerTextInput from "../../components/inputs/ControllerTextInput";
+import { useForm } from "react-hook-form";
+
+const schema = yup
+  .object({
+    Rut: yup
+      .string()
+      .required("El rut es obligatorio")
+      .matches(/^\d{7,8}-[\dkK]$/, "Formato de RUT inválido (ej: 12345678-5)"),
+    CompanyName: yup
+      .string()
+      .required("El nombre es obligatorio")
+      .min(3, "El nombre debe tener al menos 3 caracteres"),
+    CommerciaLine: yup
+      .string()
+      .required("El giro comercial es obligatorio")
+      .min(3, "El giro comercial debe tener al menos 3 caracteres"),
+    CommercialAddress: yup
+      .string()
+      .required("La dirección comercial es obligatorio")
+      .min(3, "La dirección comercial debe tener al menos 3 caracteres"),
+    SreetNumber: yup
+      .string()
+      .required("El número de calle es obligatorio")
+      .matches(/^[0-9]+$/, "Sólo pueden ser números"),
+    DepNumber: yup
+      .string()
+      .required("Este campo es obligatorio")
+      .matches(/^[0-9]+$/, "Sólo pueden ser números"),
+    city: yup
+      .string()
+      .required("La ciudad es obligatorio")
+      .min(3, "La ciudad debe tener al menos 3 caracteres"),
+    region: yup
+      .string()
+      .required("La región es obligatorio")
+      .min(3, "La región debe tener al menos 3 caracteres"),
+    commune: yup
+      .string()
+      .required("La comuna es obligatorio")
+      .min(3, "La comuna debe tener al menos 3 caracteres"),
+    PhoneNumber: yup
+      .string()
+      .required("El numero de telefono es obligatorio")
+      .matches(/^[0-9]+$/, "Sólo pueden ser números")
+      .min(9, "El número debe tener solo 9 digitos")
+      .max(9, "El número debe tener solo 9 digitos"),
+    Email: yup
+      .string()
+      .required("El correo electrónico es obligatorio")
+      .email("Correo inválido"),
+    YearsOld: yup
+      .string()
+      .required("Este campo es obligatorio")
+      .matches(/^[0-9]+$/, "Sólo pueden ser números"),
+  })
+  .required();
+const SupplierForm = ({}) => {
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(schema),
   });
-
-  const handleInputChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const saveOrder = (formData) => {
+    console.log(formData);
   };
-
-  const handleSubmit = () => {
-    // Aquí podrías agregar validación y luego enviar el formulario
-    onSubmit(formData);
-  };
-
   return (
     <View style={styles.formContainer}>
       <Text style={styles.formTitle}>
         Ingrese a continuación los datos de tu empresa:
       </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="RUT Empresa (Con guión y dígito verificador)"
-        value={formData.rut}
-        onChangeText={(text) => handleInputChange("rut", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="Rut"
+        placeholder="RUT Empresa (Con guión y dígito verificador)*"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre Empresa / Razón Social"
-        value={formData.companyName}
-        onChangeText={(text) => handleInputChange("companyName", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="CompanyName"
+        placeholder="Nombre Empresa / Razón Social *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Giro comercial de la empresa"
-        value={formData.businessType}
-        onChangeText={(text) => handleInputChange("businessType", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="CommerciaLine"
+        placeholder="Giro comercial de la empresa *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Dirección Comercial Calle / Avda / Otro"
-        value={formData.address}
-        onChangeText={(text) => handleInputChange("address", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="CommercialAddress"
+        placeholder="Dirección Comercial Calle / Avda / Otro*"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="N° calle"
-        value={formData.number}
-        onChangeText={(text) => handleInputChange("number", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="SreetNumber"
+        placeholder="N° calle *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Depto. / Edificio"
-        value={formData.department}
-        onChangeText={(text) => handleInputChange("department", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="DepNumber"
+        placeholder="N° Depto. / Edificio *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Ciudad"
-        value={formData.city}
-        onChangeText={(text) => handleInputChange("city", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="City"
+        placeholder="Ciudad *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Región (Casa matriz)"
-        value={formData.region}
-        onChangeText={(text) => handleInputChange("region", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="Region"
+        placeholder="Región (Casa matriz) *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Comuna (Casa matriz)"
-        value={formData.commune}
-        onChangeText={(text) => handleInputChange("commune", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="commune"
+        placeholder="Comuna (Casa matriz) *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Teléfono de contacto (+56)"
-        value={formData.phone}
-        onChangeText={(text) => handleInputChange("phone", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="PhoneNumber"
+        placeholder="Número de contacto *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email de contacto"
-        value={formData.email}
-        onChangeText={(text) => handleInputChange("email", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="Email"
+        placeholder="Correo electrónico *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Años de antigüedad de la empresa (N°)"
-        value={formData.yearsInBusiness}
-        onChangeText={(text) => handleInputChange("yearsInBusiness", text)}
-        placeholderTextColor="#777"
+      <ControllerTextInput
+        control={control}
+        name="YearsOld"
+        placeholder="Años de antigüedad de la empresa (N°) *"
+        rules={{
+          required: "Este campo es obligatorio", // Añadir reglas de validación
+        }}
       />
       <Button
         title="Adjuntar documento"
         onPress={() => alert("Selecciona un archivo")}
       />
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={handleSubmit(saveOrder)}
+      >
         <Text style={styles.submitButtonText}>Suscribirse</Text>
       </TouchableOpacity>
     </View>

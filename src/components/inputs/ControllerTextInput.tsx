@@ -49,4 +49,7 @@ const styles = StyleSheet.create({
     color: "#B22222",
     fontSize: 17,
   },
+  inputContainer:{
+    width:"100%"
+  }
 });

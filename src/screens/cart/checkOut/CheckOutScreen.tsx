@@ -37,13 +37,13 @@ const schema = yup
     Phone: yup
       .string()
       .required("El numero de telefono es obligatorio")
-      .matches(/^[0-9]+$/, "Solo pueden ser numeros")
-      .min(9, "El numero debe tener solo 9 digitos")
-      .max(9, "El numero debe tener solo 9 digitos"),
+      .matches(/^[0-9]+$/, "Sólo pueden ser números")
+      .min(9, "El número debe tener solo 9 dígitos")
+      .max(9, "El número debe tener solo 9 dígitos"),
     Mail: yup
     .string()
-    .required("El correo electronico es obligatorio")
-    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Correo invalido")
+    .required("El correo electrónico es obligatorio")
+    .email( "Correo inválido")
   })
   .required();
 
