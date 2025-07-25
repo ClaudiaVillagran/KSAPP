@@ -24,9 +24,7 @@ const schema = yup
       .string()
       .required("El correo electrónico es obligatorio")
       .email("Correo invalido"),
-    password: yup
-      .string()
-      .required("La contraseña es obligatoria")
+    password: yup.string().required("La contraseña es obligatoria"),
   })
   .required();
 
@@ -44,6 +42,7 @@ export default function SignInScreen() {
         data.email,
         data.password
       );
+      
       navigation.navigate("PrincipalTabs");
       console.log("usercredentials", userCredential);
     } catch (error) {
@@ -56,7 +55,7 @@ export default function SignInScreen() {
       } else {
         errorMessage = "Ocurrió un error al iniciar sesión";
       }
-      
+
       // Usar Alert.alert para mostrar el mensaje de error
       Alert.alert("Error", errorMessage);
     }

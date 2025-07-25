@@ -1,10 +1,13 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { AvailableProducts } from "../../data/availableProducts/AvailableProducts";
 import AvailableProductsCard from "../../components/cards/AvailableProductsCard";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart } from "../../store/reducers/cartSlice";
+import { getProductsData } from "../../config/dataServices";
+import { RootState } from "../../store/store";
 export default function OurProducts() {
+  const { products } = useSelector((state: RootState) => state.productSlice);
   const dispatch = useDispatch();
 
   return (
@@ -14,11 +17,10 @@ export default function OurProducts() {
       </Text>
       <FlatList
         horizontal={true}
-        data={AvailableProducts}
+        data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <AvailableProductsCard
-            image={item.image}
             title={item.title}
             price={item.price}
             author={item.author}

@@ -2,17 +2,24 @@ import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons"; // Importamos Ionicons desde Expo Vector Icons
 
-export default function AvailableProductsCard({onAddToCartPress, image, title, price, author }) {
-  
-
+export default function AvailableProductsCard({
+  onAddToCartPress,
+  imageUrl,
+  title,
+  price,
+  author,
+}) {
   return (
     <View style={styles.card}>
       {/* Botón de compra en la parte superior derecha */}
       <TouchableOpacity style={styles.buyButton} onPress={onAddToCartPress}>
         <Ionicons name="cart-outline" size={30} color="#fff" />
       </TouchableOpacity>
-
-      <Image source={image} style={styles.image} />
+      {imageUrl ? (
+        <Image source={imageUrl} style={styles.image} />
+      ) : (
+        <Image style={styles.image} source = {require("../../assets/img/image-not-found-scaled.png")}/>
+      )}
 
       <View style={styles.details}>
         <Text style={styles.title} numberOfLines={2}>

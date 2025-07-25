@@ -1,12 +1,26 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { vs } from "react-native-size-matters";
 import HeroSection from "../Sections/HeroSection";
 import AreaToResolve from "../Sections/AreaToResolve";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ScrollView } from "react-native-gesture-handler";
 import OurProducts from "../../screens/ourProducts/OurProducts";
+import { getProductsData } from "../../config/dataServices";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { setProducts } from "../../store/reducers/productSlice";
 export default function InicioComponent() {
+  const { products } = useSelector((state: RootState) => state.productSlice);
+  const dispatch = useDispatch();
+  const fetchData = async () => {
+    const data = await getProductsData();
+    dispatch(setProducts(data))
+    console.log("state products",products);
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <ScrollView style={styles.containerInicio}>
       <HeroSection />
