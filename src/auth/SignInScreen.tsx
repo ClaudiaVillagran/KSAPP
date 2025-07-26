@@ -1,12 +1,4 @@
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Alert, // Importar Alert para mostrar los mensajes
-} from "react-native";
+import { Pressable, StyleSheet, Text, View, Alert } from "react-native";
 import React, { useState } from "react";
 import LogoKsa from "../assets/svg/LogoKsa";
 import { useNavigation } from "@react-navigation/native";
@@ -16,7 +8,10 @@ import { useForm } from "react-hook-form";
 import ControllerTextInput from "../components/inputs/ControllerTextInput";
 import { Ionicons } from "@expo/vector-icons"; // Importar los íconos
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase"; // Asegúrate de importar `db` para Firestore
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/reducers/userSlice";
+import { getDoc, doc } from "firebase/firestore"; // Importar para obtener datos de Firestore
 
 const schema = yup
   .object({
@@ -33,7 +28,26 @@ export default function SignInScreen() {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+
+  // Función para obtener los detalles del usuario desde Firestore
+  const getUserDetailsFromFirestore = async (uid) => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", uid)); // Buscar el documento del usuario en Firestore
+      if (userDoc.exists()) {
+        return userDoc.data(); // Retornar los datos completos del usuario
+      } else {
+        console.log("No se encontraron detalles del usuario");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al obtener detalles del usuario:", error);
+      return null;
+    }
+  };
 
   const saveLog = async (data) => {
     try {
@@ -42,9 +56,29 @@ export default function SignInScreen() {
         data.email,
         data.password
       );
+
+      // Obtener detalles completos del usuario desde Firestore
+      const userDetails = await getUserDetailsFromFirestore(
+        userCredential.user.uid
+      );
       
+        console.log("userCredential uid", userCredential.user.uid,);
+        
+        console.log("userCredential email", userCredential.user.email,);
+      if (userDetails) {
+        console.log("userDetails ", userDetails);
+        // Actualizar Redux con los datos completos del usuario
+        dispatch(
+          setUser({
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: userDetails.displayName || "Usuario", // Si el nombre no está disponible, colocar "Usuario"
+          })
+        );
+      }
+
+      // Navegar a la pantalla principal
       navigation.navigate("PrincipalTabs");
-      console.log("usercredentials", userCredential);
     } catch (error) {
       let errorMessage = "";
       console.log(error.code);

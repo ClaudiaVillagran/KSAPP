@@ -72,7 +72,7 @@ const SupplierForm = ({}) => {
     resolver: yupResolver(schema),
   });
   const saveOrder = (formData) => {
-    console.log(formData);
+    // console.log(formData);
   };
   return (
     <View style={styles.formContainer}>

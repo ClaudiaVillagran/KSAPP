@@ -12,11 +12,17 @@ import { RootState } from "../../store/store";
 import { setProducts } from "../../store/reducers/productSlice";
 export default function InicioComponent() {
   const { products } = useSelector((state: RootState) => state.productSlice);
+  const user = useSelector((state: RootState) => state.userSlice); // Obtenemos el objeto user desde el store
+  
+  if (!user) {
+    console.log("no hay usuario logeado");
+  }
+
   const dispatch = useDispatch();
   const fetchData = async () => {
     const data = await getProductsData();
-    dispatch(setProducts(data))
-    console.log("state products",products);
+    dispatch(setProducts(data));
+    // console.log("state products", products);
   };
   useEffect(() => {
     fetchData();

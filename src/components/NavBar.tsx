@@ -1,4 +1,3 @@
-// NavBar.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -14,40 +13,78 @@ import DownIcon from "../components/icons/DownIcon";
 import LogoKsa from "../assets/svg/LogoKsa";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { Ionicons } from "@expo/vector-icons"; // Para el ícono de perfil
 
 export default function NavBar() {
   const navigation = useNavigation();
   const { items } = useSelector((state: RootState) => state.cartSlice);
-  
+  const user = useSelector((state: RootState) => state.userSlice); // Obtener el usuario desde Redux
+  console.log("user from navbar", user);
   const [text, setText] = useState("");
+
+  // Función para obtener solo la primera parte del nombre (antes del primer espacio)
+  const getFirstName = (name: string | null) => {
+    if (name) {
+      return name.split(" ")[0]; // Dividir el nombre por el espacio y tomar la primera parte
+    }
+    return "Usuario"; // Valor por defecto si no hay nombre
+  };
 
   return (
     <View style={styles.containerNavbar}>
       <View style={styles.row}>
         <View style={styles.logoAndLogin}>
           <LogoKsa style={{ width: 50, height: 50, marginRight: 10 }} />
-          <Pressable
-            onPress={() =>
-              navigation.navigate("AuthStack", { screen: "SignInScreen" })
-            }
-            style={({ pressed }) => [
-              {
-                ...(Platform.OS === "web" && { cursor: "pointer" }),
-                opacity: pressed ? 0.6 : 1,
-              },
-            ]}
-          >
-            <Text style={styles.loginText}>¡HOLA!</Text>
-            <Text style={styles.loginText}>Inicia sesión</Text>
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("AuthStack", { screen: "SignInScreen" })
-            }
-          >
-            <DownIcon />
-          </Pressable>
+
+          {/* Mostrar el perfil o iniciar sesión dependiendo de si el usuario está autenticado */}
+          {user && user.uid ? (
+            <>
+              <Pressable
+                onPress={() => navigation.navigate("ProfileScreen")} // Redirigir a ProfileScreen si el usuario está autenticado
+                style={({ pressed }) => [
+                  {
+                    ...(Platform.OS === "web" && { cursor: "pointer" }),
+                    opacity: pressed ? 0.6 : 1,
+                  },
+                ]}
+              >
+                <Text style={styles.loginText}>
+                  ¡Hola, {getFirstName(user.displayName)}! {/* Mostrar solo la primera parte del nombre */}
+                </Text>
+                <Ionicons name="person-circle" size={24} color="#2563EB" />
+              </Pressable>
+              <Pressable onPress={() => navigation.navigate("ProfileScreen")}>
+                <DownIcon />
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("AuthStack", { screen: "SignInScreen" }) // Redirigir a AuthStack si el usuario no está autenticado
+                }
+                style={({ pressed }) => [
+                  {
+                    ...(Platform.OS === "web" && { cursor: "pointer" }),
+                    opacity: pressed ? 0.6 : 1,
+                  },
+                ]}
+              >
+                <Text style={styles.loginText}>¡HOLA!</Text>
+                <Text style={styles.loginText}>Inicia sesión</Text>
+              </Pressable>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("AuthStack", { screen: "SignInScreen" })
+                }
+              >
+                <DownIcon />
+              </Pressable>
+            </>
+          )}
         </View>
+
+        {/* Carrito */}
         <Pressable
           onPress={() =>
             navigation.navigate("ServicesStack", { screen: "CartScreen" })

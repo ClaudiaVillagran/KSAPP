@@ -59,7 +59,7 @@ export default function CheckOutScreen() {
   });
 
   const saveOrder = (formData) => {
-    console.log(formData);
+    // console.log(formData);
   };
 
   return (

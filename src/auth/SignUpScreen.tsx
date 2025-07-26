@@ -14,9 +14,12 @@ import ControllerTextInput from "../components/inputs/ControllerTextInput";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { auth } from "../config/firebase";
-import { Ionicons } from "@expo/vector-icons"; // Importar
+import { auth, db } from "../config/firebase"; // Asegúrate de importar `db` para Firestore
+import { Ionicons } from "@expo/vector-icons"; // Importar íconos
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/reducers/userSlice";
+import { setDoc, doc } from "firebase/firestore"; // Importar para interactuar con Firestore
 
 const schema = yup
   .object({
@@ -36,14 +39,14 @@ const schema = yup
   .required();
 
 export default function SignUpScreen() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para la confirmación
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const saveUser = async (data) => {
     try {
@@ -52,10 +55,27 @@ export default function SignUpScreen() {
         data.email,
         data.password
       );
+
+      // Guardar detalles del usuario en Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        displayName: data.username, // Nombre completo del usuario
+        email: data.email, // Correo del usuario
+      });
+
+      // Otros datos que quieras almacenar
+
       Alert.alert("Usuario creado", "Tu cuenta ha sido creada exitosamente.");
 
+      // Guardar en Redux solo los datos necesarios
+      dispatch(
+        setUser({
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          displayName: data.username, // El nombre completo
+        })
+      );
+
       navigation.navigate("PrincipalTabs");
-      return userCredential.user;
     } catch (error) {
       let errorMessage = "";
       console.log(error.code);
@@ -67,12 +87,9 @@ export default function SignUpScreen() {
         errorMessage = "Ocurrió un error al realizar el registro.";
       }
 
-      // Mostrar el error con un alert
       Alert.alert("Error", errorMessage);
     }
   };
-
-  const navigation = useNavigation();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
